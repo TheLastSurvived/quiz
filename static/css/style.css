@@ -1,0 +1,22 @@
+.bad{
+    color:red;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+
+.quiz-box{
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 2px rgba(100, 100, 100, 0.1);
+    width: 1000px;
+    overflow: hidden;
+}
+
+.quiz-header{
+    padding: 64px;
+}
+
+
