@@ -1,14 +1,14 @@
-from flask import Flask, render_template, request, flash, redirect, session, url_for, abort,jsonify
+from flask import Flask, render_template, request, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
-import json
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nails.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-
 db = SQLAlchemy(app)
+
 
 class Quiz(db.Model):
     id = db.Column(db.Integer,primary_key=True)
@@ -17,6 +17,7 @@ class Quiz(db.Model):
 
     def __repr__(self):
         return 'Quiz %r' % self.id 
+
 
 class Question(db.Model):
     id = db.Column(db.Integer,primary_key=True)
@@ -42,16 +43,21 @@ def index():
         return redirect(url_for("index"))
     return render_template("index.html",quiz=quiz)
 
+
 @app.route('/education', methods=['GET', 'POST'])
 def education():
-    return render_template("education.html",quiz=quiz)
+    return render_template("education.html")
+
 
 @app.route('/delete-quiz/<int:id>', methods=['GET', 'POST'])
 def delete_quiz(id):
     quiz = Quiz.query.get(id)
+    if not quiz:
+        abort(404) 
     db.session.delete(quiz)
     db.session.commit()
     return redirect('/')
+
 
 @app.route('/delete-question/<int:id>/<int:id_quiz>', methods=['GET', 'POST'])
 def delete_question(id,id_quiz):
@@ -59,6 +65,7 @@ def delete_question(id,id_quiz):
     db.session.delete(question)
     db.session.commit()
     return redirect(url_for("quiz", id=id_quiz))
+
 
 @app.route('/quiz/<int:id>', methods=['GET', 'POST'])
 def quiz(id):
@@ -78,4 +85,6 @@ def quiz(id):
 
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  
     app.run(debug=True)
